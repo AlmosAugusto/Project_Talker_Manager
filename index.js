@@ -21,13 +21,13 @@ app.get('/talker', async (_request, response) => {
   return response.status(200).json(JSON.parse(talker));
 });
 
-// Task 1 - Crie o endpoint GET /talker/:id
+// Task 2 - Crie o endpoint GET /talker/:id
 
 app.get('/talker/:id', async (request, response) => {
   const { id } = request.params;
   const talker = await fs.readFile('./talker.json');
 
-  const talkerId = JSON.parse(talker).find((t) => t.id === parseInt(id));
+  const talkerId = JSON.parse(talker).find((t) => t.id === Number(id)); // ao usar o parseInt deu erro de lint então consultei esse site e me apresentou o NUMBER https://stackoverflow.com/questions/7818903/jslint-says-missing-radix-parameter;
 
   if (!talkerId) return response.status(404).json({ message: 'Pessoa palestrante não encontrada' });
 
