@@ -21,6 +21,19 @@ app.get('/talker', async (_request, response) => {
   return response.status(200).json(JSON.parse(talker));
 });
 
+// Task 1 - Crie o endpoint GET /talker/:id
+
+app.get('/talker/:id', async (request, response) => {
+  const { id } = request.params;
+  const talker = await fs.readFile('./talker.json');
+
+  const talkerId = JSON.parse(talker).find((t) => t.id === parseInt(id));
+
+  if (!talkerId) return response.status(404).json({ message: 'Pessoa palestrante não encontrada' });
+
+  return response.status(200).json(talkerId);
+});
+
 app.listen(PORT, () => {
   console.log('Online');
 });
