@@ -8,6 +8,9 @@ app.use(bodyParser.json());
 
 const HTTP_OK_STATUS = 200;
 const PORT = '3000';
+const crypto = require('crypto');
+const autorizationEmail = require('./middlewares/autorizationEmail');
+const autorizationPassword = require('./middlewares/autorizationPassword');
 
 // não remova esse endpoint, e para o avaliador funcionar
 app.get('/', (_request, response) => {
@@ -32,6 +35,13 @@ app.get('/talker/:id', async (request, response) => {
   if (!talkerId) return response.status(404).json({ message: 'Pessoa palestrante não encontrada' });
 
   return response.status(200).json(talkerId);
+});
+
+// 3 - Crie o endpoint POST /login
+// 4 - Adicione as validações para o endpoint /login
+app.post('/login', autorizationEmail, autorizationPassword, (req, res) => {
+  const autorizationToken = crypto.randomBytes(8).toString('hex');
+  return res.status(200).json({ token: autorizationToken }); 
 });
 
 app.listen(PORT, () => {
