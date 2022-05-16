@@ -34,6 +34,21 @@ app.get('/talker', async (_request, response) => {
   return response.status(SUCESS).json(JSON.parse(talker));
 });
 
+// Subi o requisito 8 para a linha 38, pois lá embaixo estava dando conflito
+// 8 - Crie o endpoint GET /talker/search?q=searchTerm 
+app.get('/talker/search',
+authMiddleware,
+ async (req, res, _next) => {
+  const { q } = req.query;
+  if (!q) return res.status(SUCESS).end([]);
+
+  const talker = await fs.readFile(talkerJson, 'utf-8');
+  const talkerParse = JSON.parse(talker);
+  const talkerFilter = talkerParse.filter((t) => t.name.includes(q));
+
+  return res.status(SUCESS).json(talkerFilter); 
+});
+
 // Task 2 - Crie o endpoint GET /talker/:id
 
 app.get('/talker/:id', async (request, response) => {
@@ -102,7 +117,8 @@ fs.writeFile(talkerJson, JSON.stringify(talkerParse));
 
 // 7 - Crie o endpoint DELETE /talker/:id
 app.delete('/talker/:id',
-authMiddleware, async (req, res, _next) => {
+authMiddleware, 
+async (req, res, _next) => {
   const { id } = req.params;
 
 const talker = await fs.readFile(talkerJson, 'utf-8');
