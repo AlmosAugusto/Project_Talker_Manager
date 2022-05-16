@@ -10,7 +10,7 @@ const PORT = '3000';
 
 // Linhas altaradas
 const crypto = require('crypto');
-const { SUCESS, NOT_FOUND, CREATED } = require('./statusCode');
+const { SUCESS, NOT_FOUND, CREATED, DELETE } = require('./statusCode');
 const authMiddleware = require('./middlewares/authMiddleware');
 const emailMiddleware = require('./middlewares/emailMiddleware');
 const ageMiddleware = require('./middlewares/ageMiddleware');
@@ -90,12 +90,32 @@ const talker = await fs.readFile(talkerJson, 'utf-8');
 
 const talkerParse = JSON.parse(talker);
 const talkerIndex = talkerParse.findIndex((i) => i.id === Number(id));
+if (talkerIndex === -1) return res.status(NOT_FOUND).json({ message: 'Palestrante não existe' });
+
 const talkerUpdate = { ...talkerParse[talkerIndex], name, age, talk: { watchedAt, rate } };
 talkerParse[talkerIndex] = talkerUpdate;
 
 fs.writeFile(talkerJson, JSON.stringify(talkerParse));
 
   return res.status(SUCESS).json(talkerUpdate); 
+});
+
+// 7 - Crie o endpoint DELETE /talker/:id
+app.delete('/talker/:id',
+authMiddleware, async (req, res, _next) => {
+  const { id } = req.params;
+
+const talker = await fs.readFile(talkerJson, 'utf-8');
+
+const talkerParse = JSON.parse(talker);
+const talkerIndex = talkerParse.findIndex((i) => i.id === Number(id));
+if (talkerIndex === -1) return res.status(NOT_FOUND).json({ message: 'Palestrante não existe' });
+
+talkerParse.splice(talkerIndex, 1); // Conteúdo do course 22.4 - "Atualizando e Deletando objetos através da API"
+
+fs.writeFile(talkerJson, JSON.stringify(talkerParse));
+
+  return res.status(DELETE).end(); 
 });
 
 app.listen(PORT, () => {

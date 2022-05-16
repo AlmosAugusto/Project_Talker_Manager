@@ -4,4 +4,5 @@ module.exports = {
   NOT_FOUND: 404,
   BAD_REQUEST: 401,
   INVALID: 400,
+  DELETE: 204,
 };
